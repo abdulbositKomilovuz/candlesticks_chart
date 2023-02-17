@@ -1,3 +1,8 @@
+## [2.1.0] - Feb 27, 2023
+
+- Added new param: color.
+
+
 ## [2.1.0] - Feb 22, 2022
 
 - document correction

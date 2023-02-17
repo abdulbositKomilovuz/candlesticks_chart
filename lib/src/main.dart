@@ -1,12 +1,13 @@
+import 'dart:io' show Platform;
 import 'dart:math';
+
 import 'package:candlesticks/candlesticks.dart';
 import 'package:candlesticks/src/models/main_window_indicator.dart';
-import 'package:candlesticks/src/widgets/mobile_chart.dart';
 import 'package:candlesticks/src/widgets/desktop_chart.dart';
+import 'package:candlesticks/src/widgets/mobile_chart.dart';
 import 'package:candlesticks/src/widgets/toolbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 
 enum ChartAdjust {
   /// Will adjust chart size by max and min value from visible area
@@ -44,11 +45,15 @@ class Candlesticks extends StatefulWidget {
   /// Custom loading widget
   final Widget? loadingWidget;
 
+  /// Color
+  final Color color;
+
   final CandleSticksStyle? style;
 
   const Candlesticks({
     Key? key,
     required this.candles,
+    this.color = Colors.transparent,
     this.onLoadMoreCandles,
     this.actions = const [],
     this.chartAdjust = ChartAdjust.visibleRange,
@@ -139,7 +144,7 @@ class _CandlesticksState extends State<Candlesticks> {
       children: [
         if (widget.displayZoomActions == true || widget.actions.isNotEmpty) ...[
           ToolBar(
-            color: style.toolBarColor,
+            color: widget.color,
             children: [
               if (widget.displayZoomActions) ...[
                 ToolBarAction(
@@ -233,6 +238,7 @@ class _CandlesticksState extends State<Candlesticks> {
                 } else {
                   return MobileChart(
                     style: style,
+                    color: widget.color,
                     onRemoveIndicator: widget.onRemoveIndicator,
                     mainWindowDataContainer: mainWindowDataContainer!,
                     chartAdjust: widget.chartAdjust,

@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:candlesticks/candlesticks.dart';
 import 'package:candlesticks/src/constant/view_constants.dart';
 import 'package:candlesticks/src/models/main_window_indicator.dart';
@@ -10,6 +11,7 @@ import 'package:candlesticks/src/widgets/time_row.dart';
 import 'package:candlesticks/src/widgets/top_panel.dart';
 import 'package:candlesticks/src/widgets/volume_widget.dart';
 import 'package:flutter/material.dart';
+
 import 'dash_line.dart';
 
 /// This widget manages gestures
@@ -36,6 +38,8 @@ class MobileChart extends StatefulWidget {
   /// changes when user scrolls along the chart
   final int index;
 
+  final Color color;
+
   /// holds main window indicators data and high and low prices.
   final MainWindowDataContainer mainWindowDataContainer;
 
@@ -53,6 +57,7 @@ class MobileChart extends StatefulWidget {
 
   MobileChart({
     required this.style,
+    required this.color,
     required this.onScaleUpdate,
     required this.onHorizontalDragUpdate,
     required this.candleWidth,
@@ -154,7 +159,7 @@ class _MobileChartState extends State<MobileChart> {
                             0),
                         widget.candles.length - 1)];
                 return Container(
-                  color: widget.style.background,
+                  color: widget.color,
                   child: Stack(
                     children: [
                       TimeRow(
