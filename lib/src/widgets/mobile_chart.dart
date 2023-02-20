@@ -82,6 +82,9 @@ class _MobileChartState extends State<MobileChart> {
   double? manualScaleHigh;
   double? manualScaleLow;
 
+  double? fixedCandlesHighPrice;
+  double? fixedCandlesLowPrice;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -108,6 +111,7 @@ class _MobileChartState extends State<MobileChart> {
 
         double candlesHighPrice = 0;
         double candlesLowPrice = 0;
+
         if (manualScaleHigh != null) {
           candlesHighPrice = manualScaleHigh!;
           candlesLowPrice = manualScaleLow!;
@@ -115,9 +119,12 @@ class _MobileChartState extends State<MobileChart> {
           candlesHighPrice = widget.mainWindowDataContainer.highs
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(max);
+
+          fixedCandlesHighPrice ??= candlesHighPrice;
           candlesLowPrice = widget.mainWindowDataContainer.lows
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(min);
+          fixedCandlesLowPrice ??= candlesLowPrice;
         } else if (widget.chartAdjust == ChartAdjust.fullRange) {
           candlesHighPrice = widget.mainWindowDataContainer.highs.reduce(max);
           candlesLowPrice = widget.mainWindowDataContainer.lows.reduce(min);
@@ -189,14 +196,23 @@ class _MobileChartState extends State<MobileChart> {
                                       manualScaleHigh = candlesHighPrice;
                                       manualScaleLow = candlesLowPrice;
                                     }
+
+                                    double deltaPrice = delta /
+                                        chartHeight *
+                                        (manualScaleHigh! - manualScaleLow!);
+                                    final tempManualScaleHigh =
+                                        manualScaleHigh! + deltaPrice;
+                                    final tempManualScaleLow =
+                                        manualScaleLow! - deltaPrice;
+
+                                    if (tempManualScaleHigh <
+                                        fixedCandlesHighPrice!) {
+                                      return;
+                                    }
+
                                     setState(() {
-                                      double deltaPrice = delta /
-                                          chartHeight *
-                                          (manualScaleHigh! - manualScaleLow!);
-                                      manualScaleHigh =
-                                          manualScaleHigh! + deltaPrice;
-                                      manualScaleLow =
-                                          manualScaleLow! - deltaPrice;
+                                      manualScaleHigh = tempManualScaleHigh;
+                                      manualScaleLow = tempManualScaleLow;
                                     });
                                   },
                                 ),
@@ -230,6 +246,7 @@ class _MobileChartState extends State<MobileChart> {
                                                   low: low,
                                                   high: high,
                                                 ),
+                                                // candle
                                                 CandleStickWidget(
                                                   candles: widget.candles,
                                                   candleWidth:
@@ -463,14 +480,12 @@ class _MobileChartState extends State<MobileChart> {
                               fontSize: 12,
                             ),
                           ),
-                          onPressed: manualScaleHigh == null
-                              ? null
-                              : () {
-                                  setState(() {
-                                    manualScaleHigh = null;
-                                    manualScaleLow = null;
-                                  });
-                                },
+                          onPressed: () {
+                            setState(() {
+                              manualScaleHigh = null;
+                              manualScaleLow = null;
+                            });
+                          },
                         ),
                       )
                     ],

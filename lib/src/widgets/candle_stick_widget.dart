@@ -1,6 +1,5 @@
 import 'package:candlesticks/src/models/candle.dart';
 import 'package:flutter/material.dart';
-import '../models/candle.dart';
 
 class CandleStickWidget extends LeafRenderObjectWidget {
   final List<Candle> candles;
@@ -111,7 +110,6 @@ class CandleStickRenderObject extends RenderBox {
       ..strokeWidth = 1;
 
     double x = size.width + offset.dx - (index + 0.5) * _candleWidth;
-
     context.canvas.drawLine(
       Offset(x, offset.dy + (_high - candle.high) / range),
       Offset(x, offset.dy + (_high - candle.low) / range),
