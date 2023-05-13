@@ -27,13 +27,15 @@ class Candlesticks extends StatefulWidget {
   /// This callback calls when the last candle gets visible
   final Future<void> Function()? onLoadMoreCandles;
 
+  final Function(double) onAddButtonPressed;
+
   /// List of buttons you what to add on top tool bar
   final List<ToolBarAction> actions;
 
   /// List of indicators to draw
   final List<Indicator>? indicators;
 
-  /// This callback calls when ever user clicks a spcesific indicator close button (X)
+  /// This callback calls when ever user clicks a specific indicator close button (X)
   final void Function(String)? onRemoveIndicator;
 
   /// How chart price range will be adjusted when moving chart
@@ -61,6 +63,7 @@ class Candlesticks extends StatefulWidget {
     this.loadingWidget,
     this.indicators,
     this.onRemoveIndicator,
+    required this.onAddButtonPressed,
     this.style,
   })  : assert(candles.length == 0 || candles.length > 1,
             "Please provide at least 2 candles"),
@@ -278,6 +281,7 @@ class _CandlesticksState extends State<Candlesticks> {
                     candleWidth: width,
                     candles: widget.candles,
                     index: index,
+                    onAddButtonPressed: widget.onAddButtonPressed,
                   );
                 }
               },

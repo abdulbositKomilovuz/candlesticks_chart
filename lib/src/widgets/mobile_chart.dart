@@ -5,14 +5,13 @@ import 'package:candlesticks/src/constant/view_constants.dart';
 import 'package:candlesticks/src/models/main_window_indicator.dart';
 import 'package:candlesticks/src/utils/helper_functions.dart';
 import 'package:candlesticks/src/widgets/candle_stick_widget.dart';
+import 'package:candlesticks/src/widgets/dash_line.dart';
 import 'package:candlesticks/src/widgets/mainwindow_indicator_widget.dart';
 import 'package:candlesticks/src/widgets/price_column.dart';
 import 'package:candlesticks/src/widgets/time_row.dart';
 import 'package:candlesticks/src/widgets/top_panel.dart';
 import 'package:candlesticks/src/widgets/volume_widget.dart';
 import 'package:flutter/material.dart';
-
-import 'dash_line.dart';
 
 /// This widget manages gestures
 /// Calculates the highest and lowest price of visible candles.
@@ -26,6 +25,8 @@ class MobileChart extends StatefulWidget {
   /// onHorizontalDragUpdate
   /// callback calls when user scrolls horizontally along the chart
   final Function onHorizontalDragUpdate;
+
+  final Function(double) onAddButtonPressed;
 
   /// candleWidth controls the width of the single candles.
   /// range: [2...10]
@@ -69,6 +70,7 @@ class MobileChart extends StatefulWidget {
     required this.onReachEnd,
     required this.mainWindowDataContainer,
     required this.onRemoveIndicator,
+    required this.onAddButtonPressed,
   });
 
   @override
@@ -120,7 +122,8 @@ class _MobileChartState extends State<MobileChart> {
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(max);
 
-          fixedCandlesHighPrice ??= candlesHighPrice;
+          fixedCandlesHighPrice = candlesHighPrice;
+          print('here: $fixedCandlesHighPrice');
           candlesLowPrice = widget.mainWindowDataContainer.lows
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(min);
@@ -192,6 +195,15 @@ class _MobileChartState extends State<MobileChart> {
                                   lastCandle: widget.candles[
                                       widget.index < 0 ? 0 : widget.index],
                                   onScale: (delta) {
+                                    // ?
+                                    // if (longPressX != null &&
+                                    //     longPressX != null) {
+                                    //   setState(() {
+                                    //     longPressX = details.localPosition.dx;
+                                    //     longPressY = details.localPosition.dy;
+                                    //   });
+                                    // }
+
                                     if (manualScaleHigh == null) {
                                       manualScaleHigh = candlesHighPrice;
                                       manualScaleLow = candlesLowPrice;
@@ -200,6 +212,7 @@ class _MobileChartState extends State<MobileChart> {
                                     double deltaPrice = delta /
                                         chartHeight *
                                         (manualScaleHigh! - manualScaleLow!);
+                                    // print('price: ${deltaPrice}');
                                     final tempManualScaleHigh =
                                         manualScaleHigh! + deltaPrice;
                                     final tempManualScaleLow =
@@ -341,43 +354,91 @@ class _MobileChartState extends State<MobileChart> {
                               child: Row(
                                 children: [
                                   DashLine(
-                                    length: maxWidth,
+                                    length: maxWidth - 20,
                                     color: widget.style.borderColor,
                                     direction: Axis.horizontal,
                                     thickness: 0.5,
                                   ),
-                                  Container(
-                                    color: widget
-                                        .style.hoverIndicatorBackgroundColor,
-                                    child: Center(
-                                      child: Text(
-                                        longPressY! < maxHeight * 0.75
-                                            ? HelperFunctions.priceToString(high -
-                                                (longPressY! -
-                                                        MAIN_CHART_VERTICAL_PADDING) /
-                                                    (maxHeight * 0.75 -
-                                                        2 *
-                                                            MAIN_CHART_VERTICAL_PADDING) *
-                                                    (high - low))
-                                            : HelperFunctions.addMetricPrefix(
-                                                HelperFunctions.getRoof(
-                                                        volumeHigh) *
-                                                    (1 -
-                                                        (longPressY! -
-                                                                maxHeight *
-                                                                    0.75 -
-                                                                10) /
-                                                            (maxHeight * 0.25 -
-                                                                10))),
-                                        style: TextStyle(
-                                          color:
-                                              widget.style.secondaryTextColor,
-                                          fontSize: 12,
+                                  GestureDetector(
+                                    onTap: () {
+                                      final priceInString = longPressY! <
+                                              maxHeight * 0.75
+                                          ? HelperFunctions.priceToString(high -
+                                              (longPressY! -
+                                                      MAIN_CHART_VERTICAL_PADDING) /
+                                                  (maxHeight * 0.75 -
+                                                      2 *
+                                                          MAIN_CHART_VERTICAL_PADDING) *
+                                                  (high - low))
+                                          : HelperFunctions.addMetricPrefix(
+                                              HelperFunctions.getRoof(
+                                                      volumeHigh) *
+                                                  (1 -
+                                                      (longPressY! -
+                                                              maxHeight * 0.75 -
+                                                              10) /
+                                                          (maxHeight * 0.25 -
+                                                              10)));
+
+                                      final price =
+                                          double.tryParse(priceInString);
+
+                                      if (price != null) {
+                                        widget.onAddButtonPressed(price);
+                                      }
+                                    },
+                                    child: Container(
+                                      color: widget
+                                          .style.hoverIndicatorBackgroundColor,
+                                      child: Center(
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              height: 20,
+                                              width: 20,
+                                              color: widget.style
+                                                  .hoverIndicatorBackgroundColor,
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons
+                                                      .add_circle_outline_rounded,
+                                                  size: 14,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              longPressY! < maxHeight * 0.75
+                                                  ? HelperFunctions.priceToString(high -
+                                                      (longPressY! -
+                                                              MAIN_CHART_VERTICAL_PADDING) /
+                                                          (maxHeight * 0.75 -
+                                                              2 *
+                                                                  MAIN_CHART_VERTICAL_PADDING) *
+                                                          (high - low))
+                                                  : HelperFunctions.addMetricPrefix(
+                                                      HelperFunctions.getRoof(
+                                                              volumeHigh) *
+                                                          (1 -
+                                                              (longPressY! -
+                                                                      maxHeight *
+                                                                          0.75 -
+                                                                      10) /
+                                                                  (maxHeight *
+                                                                          0.25 -
+                                                                      10))),
+                                              style: TextStyle(
+                                                color: widget
+                                                    .style.secondaryTextColor,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
+                                      width: PRICE_BAR_WIDTH + 20,
+                                      height: 20,
                                     ),
-                                    width: PRICE_BAR_WIDTH,
-                                    height: 20,
                                   ),
                                 ],
                               ),
@@ -397,9 +458,9 @@ class _MobileChartState extends State<MobileChart> {
                             )
                           : Container(),
                       Padding(
-                        padding: const EdgeInsets.only(right: 50, bottom: 20),
+                        padding: const EdgeInsets.only(right: 100, bottom: 20),
                         child: GestureDetector(
-                          onLongPressEnd: (_) {
+                          onTap: () {
                             setState(() {
                               longPressX = null;
                               longPressY = null;
@@ -409,19 +470,22 @@ class _MobileChartState extends State<MobileChart> {
                             widget.onPanEnd();
                           },
                           onScaleUpdate: (details) {
+                            if (longPressX != null && longPressY != null) {
+                              setState(() {
+                                longPressX =
+                                    longPressX! + details.focalPointDelta.dx;
+                                longPressY =
+                                    longPressY! + details.focalPointDelta.dy;
+                              });
+                              return;
+                            }
                             if (details.scale == 1) {
                               widget.onHorizontalDragUpdate(
-                                  details.focalPoint.dx);
+                                details.focalPoint.dx,
+                              );
                               setState(() {
-                                if (manualScaleHigh != null) {
-                                  double deltaPrice =
-                                      details.focalPointDelta.dy /
-                                          chartHeight *
-                                          (manualScaleHigh! - manualScaleLow!);
-                                  manualScaleHigh =
-                                      manualScaleHigh! + deltaPrice;
-                                  manualScaleLow = manualScaleLow! + deltaPrice;
-                                }
+                                manualScaleHigh = null;
+                                manualScaleLow = null;
                               });
                             }
                             widget.onScaleUpdate(details.scale);
@@ -471,7 +535,8 @@ class _MobileChartState extends State<MobileChart> {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.zero,
-                            primary: widget.style.hoverIndicatorBackgroundColor,
+                            backgroundColor:
+                                widget.style.hoverIndicatorBackgroundColor,
                           ),
                           child: Text(
                             "Auto",

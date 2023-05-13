@@ -28,6 +28,9 @@ class Indicator {
       return false;
     }
   }
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 class IndicatorStyle {

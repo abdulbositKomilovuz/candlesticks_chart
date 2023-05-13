@@ -67,14 +67,9 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
         body: Center(
-            child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: 200,
-            maxWidth: double.infinity,
-          ),
-          child: Candlesticks(
-            candles: candles,
-          ),
+            child: Candlesticks(
+          candles: candles,
+          onAddButtonPressed: (_) {},
         )),
       ),
     );
@@ -105,7 +100,7 @@ class _SymbolSearchModalState extends State<SymbolsSearchModal> {
         child: Container(
           width: 300,
           height: MediaQuery.of(context).size.height * 0.75,
-          color: Theme.of(context).backgroundColor.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.background.withOpacity(0.5),
           child: Column(
             children: [
               Padding(
