@@ -9,6 +9,8 @@ import 'package:candlesticks/src/widgets/toolbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'models/support_resistance_model.dart';
+
 enum ChartAdjust {
   /// Will adjust chart size by max and min value from visible area
   visibleRange,
@@ -52,6 +54,8 @@ class Candlesticks extends StatefulWidget {
 
   final CandleSticksStyle? style;
 
+  final Zones? zones;
+
   const Candlesticks({
     Key? key,
     required this.candles,
@@ -63,6 +67,7 @@ class Candlesticks extends StatefulWidget {
     this.loadingWidget,
     this.indicators,
     this.onRemoveIndicator,
+    this.zones,
     required this.onAddButtonPressed,
     this.style,
   })  : assert(candles.length == 0 || candles.length > 1,
@@ -245,6 +250,7 @@ class _CandlesticksState extends State<Candlesticks> {
                     onRemoveIndicator: widget.onRemoveIndicator,
                     mainWindowDataContainer: mainWindowDataContainer!,
                     chartAdjust: widget.chartAdjust,
+                    zones: widget.zones,
                     onScaleUpdate: (double scale) {
                       scale = max(0.90, scale);
                       scale = min(1.1, scale);

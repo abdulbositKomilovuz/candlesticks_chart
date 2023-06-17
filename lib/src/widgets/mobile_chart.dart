@@ -11,6 +11,7 @@ import 'package:candlesticks/src/widgets/price_column.dart';
 import 'package:candlesticks/src/widgets/time_row.dart';
 import 'package:candlesticks/src/widgets/top_panel.dart';
 import 'package:candlesticks/src/widgets/volume_widget.dart';
+import 'package:candlesticks/src/widgets/zone_widget.dart';
 import 'package:flutter/material.dart';
 
 /// This widget manages gestures
@@ -56,12 +57,15 @@ class MobileChart extends StatefulWidget {
 
   final Function() onReachEnd;
 
+  final Zones? zones;
+
   MobileChart({
     required this.style,
     required this.color,
     required this.onScaleUpdate,
     required this.onHorizontalDragUpdate,
     required this.candleWidth,
+    required this.zones,
     required this.candles,
     required this.index,
     required this.chartAdjust,
@@ -123,11 +127,22 @@ class _MobileChartState extends State<MobileChart> {
               .reduce(max);
 
           fixedCandlesHighPrice = candlesHighPrice;
-          print('here: $fixedCandlesHighPrice');
           candlesLowPrice = widget.mainWindowDataContainer.lows
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(min);
           fixedCandlesLowPrice ??= candlesLowPrice;
+
+          if (widget.zones != null) {
+            final max = widget.zones!.max;
+            final min = widget.zones!.min;
+
+            if (max >= candlesHighPrice) {
+              candlesHighPrice = max;
+            }
+            if (min <= candlesLowPrice) {
+              candlesLowPrice = min;
+            }
+          }
         } else if (widget.chartAdjust == ChartAdjust.fullRange) {
           candlesHighPrice = widget.mainWindowDataContainer.highs.reduce(max);
           candlesLowPrice = widget.mainWindowDataContainer.lows.reduce(min);
@@ -348,6 +363,24 @@ class _MobileChartState extends State<MobileChart> {
                           ),
                         ],
                       ),
+                      widget.zones != null
+                          ? ZoneWidget(
+                              zone: widget.zones!,
+                              high: high,
+                              low: low,
+                              chartHeight: chartHeight,
+                              maxWidth: maxWidth,
+                            )
+                          // ? Positioned(
+                          //     top: supportZoe,
+                          //     child: DashLine(
+                          //       length: maxWidth,
+                          //       color: widget.style.borderColor,
+                          //       direction: Axis.horizontal,
+                          //       thickness: 0.5,
+                          //     ),
+                          //   )
+                          : const SizedBox(),
                       longPressY != null
                           ? Positioned(
                               top: longPressY! - 10,
@@ -363,13 +396,14 @@ class _MobileChartState extends State<MobileChart> {
                                     onTap: () {
                                       final priceInString = longPressY! <
                                               maxHeight * 0.75
-                                          ? HelperFunctions.priceToString(high -
-                                              (longPressY! -
-                                                      MAIN_CHART_VERTICAL_PADDING) /
-                                                  (maxHeight * 0.75 -
-                                                      2 *
-                                                          MAIN_CHART_VERTICAL_PADDING) *
-                                                  (high - low))
+                                          ? HelperFunctions.priceToString(
+                                              high -
+                                                  (longPressY! -
+                                                          MAIN_CHART_VERTICAL_PADDING) /
+                                                      (maxHeight * 0.75 -
+                                                          2 * MAIN_CHART_VERTICAL_PADDING) *
+                                                      (high - low),
+                                            )
                                           : HelperFunctions.addMetricPrefix(
                                               HelperFunctions.getRoof(
                                                       volumeHigh) *
