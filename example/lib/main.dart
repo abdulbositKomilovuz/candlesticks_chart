@@ -70,9 +70,14 @@ class _MyAppState extends State<MyApp> {
             child: Candlesticks(
           candles: candles,
           onAddButtonPressed: (_) {},
-          zones: ResistanceZone(
-            max: 27394,
-            min: 27232,
+          zones: Fibonacci(
+            f0: 26800,
+            f236: 26700,
+            f382: 26500,
+            f5: 26000,
+            f618: 25500,
+            f786: 25000,
+            f1: 24790,
           ),
         )),
       ),

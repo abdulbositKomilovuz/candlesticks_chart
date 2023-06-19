@@ -14,6 +14,8 @@ import 'package:candlesticks/src/widgets/volume_widget.dart';
 import 'package:candlesticks/src/widgets/zone_widget.dart';
 import 'package:flutter/material.dart';
 
+import '../models/zones.dart';
+
 /// This widget manages gestures
 /// Calculates the highest and lowest price of visible candles.
 /// Updates right-hand side numbers.
@@ -132,9 +134,9 @@ class _MobileChartState extends State<MobileChart> {
               .reduce(min);
           fixedCandlesLowPrice ??= candlesLowPrice;
 
-          if (widget.zones != null) {
-            final max = widget.zones!.max;
-            final min = widget.zones!.min;
+          if (widget.zones != null && widget.zones is PriceActionZones) {
+            final max = (widget.zones! as PriceActionZones).max;
+            final min = (widget.zones! as PriceActionZones).min;
 
             if (max >= candlesHighPrice) {
               candlesHighPrice = max;
@@ -363,23 +365,23 @@ class _MobileChartState extends State<MobileChart> {
                           ),
                         ],
                       ),
-                      widget.zones != null
-                          ? ZoneWidget(
-                              zone: widget.zones!,
+                      widget.zones != null && widget.zones is PriceActionZones
+                          ? PriceActionZoneWidget(
+                              zone: widget.zones! as PriceActionZones,
                               high: high,
                               low: low,
                               chartHeight: chartHeight,
                               maxWidth: maxWidth,
                             )
-                          // ? Positioned(
-                          //     top: supportZoe,
-                          //     child: DashLine(
-                          //       length: maxWidth,
-                          //       color: widget.style.borderColor,
-                          //       direction: Axis.horizontal,
-                          //       thickness: 0.5,
-                          //     ),
-                          //   )
+                          : const SizedBox(),
+                      widget.zones != null && widget.zones is Fibonacci
+                          ? FibonacciZoneWidget(
+                              zone: widget.zones! as Fibonacci,
+                              high: high,
+                              low: low,
+                              chartHeight: chartHeight,
+                              maxWidth: maxWidth,
+                            )
                           : const SizedBox(),
                       longPressY != null
                           ? Positioned(

@@ -1,18 +1,20 @@
-enum ZoneTypes { support, resistance, trendReversal }
+import 'package:candlesticks/src/models/zones.dart';
 
-abstract class Zones {
+enum ZoneTypes { support, resistance, trendReversal, fibonacci }
+
+abstract class PriceActionZones extends Zones {
   final double max;
   final double min;
   final ZoneTypes zoneType;
 
-  Zones({
+  PriceActionZones({
     required this.max,
     required this.min,
     required this.zoneType,
   });
 }
 
-class SupportZone extends Zones {
+class SupportZone extends PriceActionZones {
   SupportZone({
     required double max,
     required double min,
@@ -24,7 +26,7 @@ class SupportZone extends Zones {
         );
 }
 
-class ResistanceZone extends Zones {
+class ResistanceZone extends PriceActionZones {
   ResistanceZone({
     required double max,
     required double min,
@@ -36,7 +38,7 @@ class ResistanceZone extends Zones {
         );
 }
 
-class TrendReversalZone extends Zones {
+class TrendReversalZone extends PriceActionZones {
   TrendReversalZone({
     required double max,
     required double min,

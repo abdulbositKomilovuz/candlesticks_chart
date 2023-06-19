@@ -9,7 +9,7 @@ import 'package:candlesticks/src/widgets/toolbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'models/support_resistance_model.dart';
+import 'models/zones.dart';
 
 enum ChartAdjust {
   /// Will adjust chart size by max and min value from visible area
