@@ -4,11 +4,11 @@ enum FibonacciLevels { f0, f236, f382, f5, f618, f786, f1 }
 
 class Fibonacci extends Zones {
   final double f0;
-  final double f236;
-  final double f382;
-  final double f5;
-  final double f618;
-  final double f786;
+  final double? f236;
+  final double? f382;
+  final double? f5;
+  final double? f618;
+  final double? f786;
   final double f1;
 
   Fibonacci({

@@ -87,12 +87,15 @@ class FibonacciZoneWidget extends StatelessWidget {
     required this.maxWidth,
   }) : super(key: key);
 
-  double calculatePriceIndicatorTopPadding(
+  double? calculatePriceIndicatorTopPadding(
     double chartHeight,
     double low,
     double high,
-    double close,
+    double? close,
   ) {
+    if (close == null) {
+      return null;
+    }
     return chartHeight +
         20 -
         (close - low) / (high - low) * chartHeight -
@@ -156,56 +159,76 @@ class FibonacciZoneWidget extends StatelessWidget {
             level: FibonacciLevels.f0,
           ),
         ),
-        Positioned(
-          top: f786,
-          child: ZoneLineWidget(
-            maxWidth: maxWidth,
-            price: zone.f786,
-            zoneType: ZoneTypes.fibonacci,
-            isMaxPrice: true,
-            level: FibonacciLevels.f786,
-          ),
-        ),
-        Positioned(
-          top: f618,
-          child: ZoneLineWidget(
-            maxWidth: maxWidth,
-            price: zone.f618,
-            zoneType: ZoneTypes.fibonacci,
-            isMaxPrice: true,
-            level: FibonacciLevels.f618,
-          ),
-        ),
-        Positioned(
-          top: f5,
-          child: ZoneLineWidget(
-            maxWidth: maxWidth,
-            price: zone.f5,
-            zoneType: ZoneTypes.fibonacci,
-            isMaxPrice: true,
-            level: FibonacciLevels.f5,
-          ),
-        ),
-        Positioned(
-          top: f382,
-          child: ZoneLineWidget(
-            maxWidth: maxWidth,
-            price: zone.f382,
-            zoneType: ZoneTypes.fibonacci,
-            isMaxPrice: true,
-            level: FibonacciLevels.f382,
-          ),
-        ),
-        Positioned(
-          top: f236,
-          child: ZoneLineWidget(
-            maxWidth: maxWidth,
-            price: zone.f236,
-            zoneType: ZoneTypes.fibonacci,
-            isMaxPrice: true,
-            level: FibonacciLevels.f236,
-          ),
-        ),
+        f786 != null
+            ? Positioned(
+                top: f786,
+                child: ZoneLineWidget(
+                  maxWidth: maxWidth,
+                  price: zone.f786!,
+                  zoneType: ZoneTypes.fibonacci,
+                  isMaxPrice: true,
+                  level: FibonacciLevels.f786,
+                ))
+            : Positioned(
+                top: 0.0,
+                child: SizedBox(),
+              ),
+        f618 != null
+            ? Positioned(
+                top: f618,
+                child: ZoneLineWidget(
+                  maxWidth: maxWidth,
+                  price: zone.f618!,
+                  zoneType: ZoneTypes.fibonacci,
+                  isMaxPrice: true,
+                  level: FibonacciLevels.f618,
+                ))
+            : Positioned(
+                top: 0.0,
+                child: SizedBox(),
+              ),
+        f5 != null
+            ? Positioned(
+                top: f5,
+                child: ZoneLineWidget(
+                  maxWidth: maxWidth,
+                  price: zone.f5!,
+                  zoneType: ZoneTypes.fibonacci,
+                  isMaxPrice: true,
+                  level: FibonacciLevels.f5,
+                ))
+            : Positioned(
+                top: 0.0,
+                child: SizedBox(),
+              ),
+        f382 != null
+            ? Positioned(
+                top: f382,
+                child: ZoneLineWidget(
+                  maxWidth: maxWidth,
+                  price: zone.f382!,
+                  zoneType: ZoneTypes.fibonacci,
+                  isMaxPrice: true,
+                  level: FibonacciLevels.f382,
+                ))
+            : Positioned(
+                top: 0.0,
+                child: SizedBox(),
+              ),
+        f236 != null
+            ? Positioned(
+                top: f236,
+                child: ZoneLineWidget(
+                  maxWidth: maxWidth,
+                  price: zone.f236!,
+                  zoneType: ZoneTypes.fibonacci,
+                  isMaxPrice: true,
+                  level: FibonacciLevels.f236,
+                ))
+            : Positioned(
+                top: 0.0,
+                child: SizedBox(),
+              ),
         Positioned(
           top: f1,
           child: ZoneLineWidget(
