@@ -203,6 +203,8 @@ class _CandlesticksState extends State<Candlesticks> {
                     Platform.isLinux) {
                   return DesktopChart(
                     style: style,
+                    zones: widget.zones,
+                    color: widget.color,
                     onRemoveIndicator: widget.onRemoveIndicator,
                     mainWindowDataContainer: mainWindowDataContainer!,
                     chartAdjust: widget.chartAdjust,

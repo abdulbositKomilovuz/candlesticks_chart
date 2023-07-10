@@ -15,7 +15,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../models/candle.dart';
+import '../models/fibonacci.dart';
+import '../models/support_resistance_model.dart';
+import '../models/zones.dart';
 import 'dash_line.dart';
+import 'zone_widget.dart';
 
 /// This widget manages gestures
 /// Calculates the highest and lowest price of visible candles.
@@ -45,6 +49,10 @@ class DesktopChart extends StatefulWidget {
   /// or by the whole dataset
   final ChartAdjust chartAdjust;
 
+  final Color color;
+
+  final Zones? zones;
+
   final CandleSticksStyle style;
 
   final void Function(double) onPanDown;
@@ -70,6 +78,8 @@ class DesktopChart extends StatefulWidget {
     required this.mainWindowDataContainer,
     required this.onRemoveIndicator,
     required this.style,
+    required this.color,
+    required this.zones,
   });
 
   @override
@@ -83,6 +93,9 @@ class _DesktopChartState extends State<DesktopChart> {
   bool showHoverIndicator = true;
   double? manualScaleHigh;
   double? manualScaleLow;
+
+  double? fixedCandlesHighPrice;
+  double? fixedCandlesLowPrice;
 
   void _onMouseExit(PointerEvent details) {
     setState(() {
@@ -131,9 +144,23 @@ class _DesktopChartState extends State<DesktopChart> {
           candlesHighPrice = widget.mainWindowDataContainer.highs
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(max);
+          fixedCandlesHighPrice ??= candlesHighPrice;
           candlesLowPrice = widget.mainWindowDataContainer.lows
               .getRange(candlesStartIndex, candlesEndIndex + 1)
               .reduce(min);
+          fixedCandlesLowPrice ??= candlesLowPrice;
+
+          if (widget.zones != null && widget.zones is PriceActionZones) {
+            final max = (widget.zones! as PriceActionZones).max;
+            final min = (widget.zones! as PriceActionZones).min;
+
+            if (max >= candlesHighPrice) {
+              candlesHighPrice = max;
+            }
+            if (min <= candlesLowPrice) {
+              candlesLowPrice = min;
+            }
+          }
         } else if (widget.chartAdjust == ChartAdjust.fullRange) {
           candlesHighPrice = widget.mainWindowDataContainer.highs.reduce(max);
           candlesLowPrice = widget.mainWindowDataContainer.lows.reduce(min);
@@ -169,7 +196,7 @@ class _DesktopChartState extends State<DesktopChart> {
                             0),
                         widget.candles.length - 1)];
                 return Container(
-                  color: widget.style.background,
+                  color: widget.color,
                   child: Stack(
                     children: [
                       TimeRow(
@@ -195,18 +222,25 @@ class _DesktopChartState extends State<DesktopChart> {
                                   lastCandle: widget.candles[
                                       widget.index < 0 ? 0 : widget.index],
                                   onScale: (delta) {
-                                    if (manualScaleHigh == null) {
-                                      manualScaleHigh = candlesHighPrice;
-                                      manualScaleLow = candlesLowPrice;
+                                    double deltaPrice = delta /
+                                        chartHeight *
+                                        (manualScaleHigh! - manualScaleLow!);
+                                    final tempManualScaleHigh =
+                                        manualScaleHigh! + deltaPrice;
+                                    final tempManualScaleLow =
+                                        manualScaleLow! - deltaPrice;
+
+                                    if (tempManualScaleHigh <
+                                        fixedCandlesHighPrice!) {
+                                      return;
                                     }
+                                    // if (manualScaleHigh == null) {
+                                    //   manualScaleHigh = candlesHighPrice;
+                                    //   manualScaleLow = candlesLowPrice;
+                                    // }
                                     setState(() {
-                                      double deltaPrice = delta /
-                                          chartHeight *
-                                          (manualScaleHigh! - manualScaleLow!);
-                                      manualScaleHigh =
-                                          manualScaleHigh! + deltaPrice;
-                                      manualScaleLow =
-                                          manualScaleLow! - deltaPrice;
+                                      manualScaleHigh = tempManualScaleHigh;
+                                      manualScaleLow = tempManualScaleLow;
                                     });
                                   },
                                 ),
@@ -328,6 +362,24 @@ class _DesktopChartState extends State<DesktopChart> {
                           ),
                         ],
                       ),
+                      widget.zones != null && widget.zones is PriceActionZones
+                          ? PriceActionZoneWidget(
+                              zone: widget.zones! as PriceActionZones,
+                              high: high,
+                              low: low,
+                              chartHeight: chartHeight,
+                              maxWidth: maxWidth,
+                            )
+                          : const SizedBox(),
+                      widget.zones != null && widget.zones is Fibonacci
+                          ? FibonacciZoneWidget(
+                              zone: widget.zones! as Fibonacci,
+                              high: high,
+                              low: low,
+                              chartHeight: chartHeight,
+                              maxWidth: maxWidth,
+                            )
+                          : const SizedBox(),
                       mouseHoverY != null && showHoverIndicator
                           ? Positioned(
                               top: mouseHoverY! - 10,
@@ -467,27 +519,22 @@ class _DesktopChartState extends State<DesktopChart> {
                         width: PRICE_BAR_WIDTH,
                         height: 20,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            backgroundColor:
-                                widget.style.hoverIndicatorBackgroundColor,
-                          ),
-                          child: Text(
-                            "Auto",
-                            style: TextStyle(
-                              color: widget.style.secondaryTextColor,
-                              fontSize: 12,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              backgroundColor:
+                                  widget.style.hoverIndicatorBackgroundColor,
                             ),
-                          ),
-                          onPressed: manualScaleHigh == null
-                              ? null
-                              : () {
-                                  setState(() {
-                                    manualScaleHigh = null;
-                                    manualScaleLow = null;
-                                  });
-                                },
-                        ),
+                            child: Text(
+                              "Auto",
+                              style: TextStyle(
+                                color: widget.style.secondaryTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                            onPressed: () => setState(() {
+                                  manualScaleHigh = null;
+                                  manualScaleLow = null;
+                                })),
                       )
                     ],
                   ),
