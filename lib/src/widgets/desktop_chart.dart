@@ -50,7 +50,7 @@ class DesktopChart extends StatefulWidget {
 
   final Color color;
 
-  final Zones? zones;
+  final List<Zones>? zones;
 
   final CandleSticksStyle style;
 
@@ -361,24 +361,24 @@ class _DesktopChartState extends State<DesktopChart> {
                           ),
                         ],
                       ),
-                      widget.zones != null && widget.zones is PriceActionZones
-                          ? PriceActionZoneWidget(
-                              zone: widget.zones! as PriceActionZones,
-                              high: high,
-                              low: low,
-                              chartHeight: chartHeight,
-                              maxWidth: maxWidth,
-                            )
-                          : const SizedBox(),
-                      widget.zones != null && widget.zones is Fibonacci
-                          ? FibonacciZoneWidget(
-                              zone: widget.zones! as Fibonacci,
-                              high: high,
-                              low: low,
-                              chartHeight: chartHeight,
-                              maxWidth: maxWidth,
-                            )
-                          : const SizedBox(),
+                      for (Zones zone in widget.zones ?? [])
+                        zone is PriceActionZones
+                            ? PriceActionZoneWidget(
+                                zone: zone,
+                                high: high,
+                                low: low,
+                                chartHeight: chartHeight,
+                                maxWidth: maxWidth,
+                              )
+                            : zone is Fibonacci
+                                ? FibonacciZoneWidget(
+                                    zone: zone,
+                                    high: high,
+                                    low: low,
+                                    chartHeight: chartHeight,
+                                    maxWidth: maxWidth,
+                                  )
+                                : const SizedBox(),
                       mouseHoverY != null && showHoverIndicator
                           ? Positioned(
                               top: mouseHoverY! - 10,

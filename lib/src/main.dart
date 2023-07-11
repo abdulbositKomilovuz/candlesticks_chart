@@ -54,7 +54,7 @@ class Candlesticks extends StatefulWidget {
 
   final CandleSticksStyle? style;
 
-  final Zones? zones;
+  final List<Zones>? zones;
 
   const Candlesticks({
     Key? key,

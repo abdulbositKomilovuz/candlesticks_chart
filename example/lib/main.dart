@@ -67,19 +67,26 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
         body: Center(
-            child: Candlesticks(
-          candles: candles,
-          onAddButtonPressed: (_) {},
-          zones: Fibonacci(
-            f0: 26800,
-            f236: 26700,
-            f382: 26500,
-            f5: 26000,
-            f618: 25500,
-            f786: 25000,
-            f1: 24790,
+          child: Candlesticks(
+            candles: candles,
+            onAddButtonPressed: (_) {},
+            zones: [
+              SupportZone(
+                max: 31400,
+                min: 29500,
+              ),
+              Fibonacci(
+                f0: 26800,
+                f236: 26700,
+                f382: 26500,
+                f5: 26000,
+                f618: 25500,
+                f786: 25000,
+                f1: 24790,
+              ),
+            ],
           ),
-        )),
+        ),
       ),
     );
   }
