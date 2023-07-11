@@ -7,7 +7,7 @@ class BinanceRepository {
   Future<List<Candle>> fetchCandles(
       {required String symbol, required String interval, int? endTime}) async {
     final uri = Uri.parse(
-      "https://ahsan-screener.uz/api/analytics/binance/?symbol=BTCUSDT&interval=4h",
+      "https://api.ahsan-screener.uz/api/analytics/binance/?symbol=BTCUSDT&interval=4h",
     );
     final res = await http.get(uri);
 

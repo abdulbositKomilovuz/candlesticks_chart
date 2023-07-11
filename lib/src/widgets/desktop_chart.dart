@@ -11,7 +11,6 @@ import 'package:candlesticks/src/widgets/price_column.dart';
 import 'package:candlesticks/src/widgets/time_row.dart';
 import 'package:candlesticks/src/widgets/top_panel.dart';
 import 'package:candlesticks/src/widgets/volume_widget.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../models/candle.dart';
@@ -222,26 +221,26 @@ class _DesktopChartState extends State<DesktopChart> {
                                   lastCandle: widget.candles[
                                       widget.index < 0 ? 0 : widget.index],
                                   onScale: (delta) {
-                                    double deltaPrice = delta /
-                                        chartHeight *
-                                        (manualScaleHigh! - manualScaleLow!);
-                                    final tempManualScaleHigh =
-                                        manualScaleHigh! + deltaPrice;
-                                    final tempManualScaleLow =
-                                        manualScaleLow! - deltaPrice;
+                                    // double deltaPrice = delta /
+                                    //     chartHeight *
+                                    //     (manualScaleHigh! - manualScaleLow!);
+                                    // final tempManualScaleHigh =
+                                    //     manualScaleHigh! + deltaPrice;
+                                    // final tempManualScaleLow =
+                                    //     manualScaleLow! - deltaPrice;
 
-                                    if (tempManualScaleHigh <
-                                        fixedCandlesHighPrice!) {
-                                      return;
-                                    }
-                                    // if (manualScaleHigh == null) {
-                                    //   manualScaleHigh = candlesHighPrice;
-                                    //   manualScaleLow = candlesLowPrice;
+                                    // if (tempManualScaleHigh <
+                                    //     fixedCandlesHighPrice!) {
+                                    //   return;
                                     // }
-                                    setState(() {
-                                      manualScaleHigh = tempManualScaleHigh;
-                                      manualScaleLow = tempManualScaleLow;
-                                    });
+                                    // // if (manualScaleHigh == null) {
+                                    // //   manualScaleHigh = candlesHighPrice;
+                                    // //   manualScaleLow = candlesLowPrice;
+                                    // // }
+                                    // setState(() {
+                                    //   manualScaleHigh = tempManualScaleHigh;
+                                    //   manualScaleLow = tempManualScaleLow;
+                                    // });
                                   },
                                 ),
                                 Row(
@@ -443,10 +442,10 @@ class _DesktopChartState extends State<DesktopChart> {
                         padding: const EdgeInsets.only(right: 50, bottom: 20),
                         child: Listener(
                           onPointerSignal: (pointerSignal) {
-                            if (pointerSignal is PointerScrollEvent) {
-                              widget.onScaleUpdate(
-                                  pointerSignal.scrollDelta.direction * -1);
-                            }
+                            // if (pointerSignal is PointerScrollEvent) {
+                            //   widget.onScaleUpdate(
+                            //       pointerSignal.scrollDelta.direction * -1);
+                            // }
                           },
                           child: MouseRegion(
                             cursor: isDragging
@@ -457,39 +456,39 @@ class _DesktopChartState extends State<DesktopChart> {
                             child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               onPanUpdate: (update) {
-                                mouseHoverX = update.localPosition.dx;
-                                mouseHoverY = update.localPosition.dy;
-                                widget.onHorizontalDragUpdate(
-                                    update.localPosition.dx);
-                                setState(() {
-                                  if (manualScaleHigh != null) {
-                                    double deltaPrice = update.delta.dy /
-                                        chartHeight *
-                                        (manualScaleHigh! - manualScaleLow!);
-                                    manualScaleHigh =
-                                        manualScaleHigh! + deltaPrice;
-                                    manualScaleLow =
-                                        manualScaleLow! + deltaPrice;
-                                  }
-                                });
+                                // mouseHoverX = update.localPosition.dx;
+                                // mouseHoverY = update.localPosition.dy;
+                                // widget.onHorizontalDragUpdate(
+                                //     update.localPosition.dx);
+                                // setState(() {
+                                //   if (manualScaleHigh != null) {
+                                //     double deltaPrice = update.delta.dy /
+                                //         chartHeight *
+                                //         (manualScaleHigh! - manualScaleLow!);
+                                //     manualScaleHigh =
+                                //         manualScaleHigh! + deltaPrice;
+                                //     manualScaleLow =
+                                //         manualScaleLow! + deltaPrice;
+                                //   }
+                                // });
                               },
                               onPanEnd: (update) {
-                                widget.onPanEnd();
-                                setState(() {
-                                  isDragging = false;
-                                });
-                                Future.delayed(Duration(milliseconds: 300), () {
-                                  setState(() {
-                                    showHoverIndicator = true;
-                                  });
-                                });
+                                // widget.onPanEnd();
+                                // setState(() {
+                                //   isDragging = false;
+                                // });
+                                // Future.delayed(Duration(milliseconds: 300), () {
+                                //   setState(() {
+                                //     showHoverIndicator = true;
+                                //   });
+                                // });
                               },
                               onPanDown: (update) {
-                                widget.onPanDown(update.localPosition.dx);
-                                setState(() {
-                                  isDragging = true;
-                                  showHoverIndicator = false;
-                                });
+                                // widget.onPanDown(update.localPosition.dx);
+                                // setState(() {
+                                //   isDragging = true;
+                                //   showHoverIndicator = false;
+                                // });
                               },
                             ),
                           ),
@@ -519,22 +518,24 @@ class _DesktopChartState extends State<DesktopChart> {
                         width: PRICE_BAR_WIDTH,
                         height: 20,
                         child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              backgroundColor:
-                                  widget.style.hoverIndicatorBackgroundColor,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            backgroundColor:
+                                widget.style.hoverIndicatorBackgroundColor,
+                          ),
+                          child: Text(
+                            "Auto",
+                            style: TextStyle(
+                              color: widget.style.secondaryTextColor,
+                              fontSize: 12,
                             ),
-                            child: Text(
-                              "Auto",
-                              style: TextStyle(
-                                color: widget.style.secondaryTextColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                            onPressed: () => setState(() {
-                                  manualScaleHigh = null;
-                                  manualScaleLow = null;
-                                })),
+                          ),
+                          onPressed: () {},
+                        ),
+                        // onPressed: () => setState(() {
+                        //       manualScaleHigh = null;
+                        //       manualScaleLow = null;
+                        //     })),
                       )
                     ],
                   ),
